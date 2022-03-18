@@ -48,7 +48,7 @@ def check_data(im_data):
         error_message += "[X] Full name: {}".format(im_data.full_name)
     # First name validation
     if (im_data.first_name != "" and
-        (im_data.first_name not in im_data.first_name or not valid_name_field(im_data.first_name))) or \
+        (im_data.first_name not in im_data.full_name or not valid_name_field(im_data.first_name))) or \
             (not fullname_validation and starting_with_number(im_data.full_name)
              and im_data.full_name != im_data.first_name):
         error_count += 1
