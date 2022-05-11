@@ -37,6 +37,7 @@ def valid_mail_state(field_value):
 def valid_mailing_zip(field_value):
     return re.findall(r"(^\d{3,6}[\-\d{3,5}]*$)", field_value) != []
 
+
 def invalid_ampersand_place(field_value):
     return re.findall(r"(^\&+[\s\w\d]+)|([\s\w\d]+\&+$)|([\w\d]+\&[\w\d]+)", field_value)
 
@@ -53,26 +54,28 @@ def has_date(field_value):
 
 def has_invalid(field_value, values):
     formatted_value = field_value.strip().lower()
+    flag = []
     for value in values:
         if value == "address":
-            return "unassigned\n" in formatted_value
+            flag.append("unassigned\n" in formatted_value)
         elif value == "all":
-            return "unavailable" in formatted_value
+            flag.append("unavailable" in formatted_value)
         elif value == "names":
-            return "owner" == formatted_value
+            flag.append("owner" == formatted_value)
         elif value == "null":
-            return "null" == formatted_value
+            flag.append("null" in formatted_value)
         elif value == "zero":
-            return "0" == formatted_value
+            flag.append("0" == formatted_value)
         elif value == "empty":
-            return "" == formatted_value
+            flag.append("" == formatted_value)
         elif value == "pobox":
-            return "po box box" in formatted_value
+            flag.append("po box box" in formatted_value)
         elif value == "xx":
-            return "xx" in formatted_value
+            flag.append("xx" in formatted_value)
         elif value == "ampersand":
-            return "&" in field_value and invalid_ampersand_place(field_value)
-    return True
+            flag.append("&" in formatted_value and invalid_ampersand_place(formatted_value))
+
+    return any(flag)
 
 
 def has_characters(field_value):
@@ -88,7 +91,7 @@ def check_data(im_data):
     error_message = ""
     # Full name validation
     fullname_validation = are_all_numbers(im_data.full_name) or has_date(im_data.full_name) or \
-                          has_invalid(im_data.full_name, ["ampersand", "xx", "zero", "empty", "all"]) or \
+                          has_invalid(im_data.full_name, ["null", "ampersand", "xx", "zero", "empty", "all"]) or \
                           not valid_name_field(im_data.full_name)
     if fullname_validation:
         error_count += 1
