@@ -30,9 +30,15 @@ if __name__ == '__main__':
         #     seed_dict["error_count"] = err_count
         #     seed_dict["error_message"] = err_message
         #     seed_dict["row"] = seed_row.row
+        count = 0
         for data in im_data:
             check_dict = {}
-            error_count, error_message = checkpoints.check_data(data)
+            error_count = 0
+            error_message = ""
+            if count == 0:
+                count += 1
+            else:
+                error_count, error_message = checkpoints.check_data(data)
             check_dict["error_count"] = error_count
             check_dict["error_message"] = error_message
             check_dict["row"] = data.row
