@@ -3,15 +3,15 @@ import data
 
 
 def valid_name_field(field_value):
-    return re.findall(r"(^[\d\w\s\.\,\'\(\)\-\#\+\&]+$)", field_value)
+    return re.findall(r"(^[\d\w\s\.\,\'\-\#\+\&]+$)", field_value)
 
 
 def valid_city_field(field_value):
-    return re.findall(r"(^[\w\s\.\,\'\(\)\-\&\#]+$)", field_value)
+    return re.findall(r"(^[\w\s\.\,\'\-\&\#]+$)", field_value)
 
 
 def valid_address_field(field_value):
-    return re.findall(r"(^[\d\w\s\.\,\'\(\)\-\#]+$)", field_value)
+    return re.findall(r"(^[\d\w\s\.\,\'\-\#]+$)", field_value)
 
 
 def valid_email_address(field_value):
@@ -27,7 +27,7 @@ def has_number(field_value):
 
 
 def starting_with_number(field_value):
-    return re.findall(r"(^[\d]+[\d\w\s\.\,\'\(\)\-\#]+$)", field_value) != []
+    return re.findall(r"(^[\d]+[\d\w\s\.\,\'\-\#]+$)", field_value) != []
 
 
 def valid_mail_state(field_value):
@@ -57,7 +57,7 @@ def has_invalid(field_value, values):
     flag = []
     for value in values:
         if value == "address":
-            flag.append("unassigned\n" in formatted_value)
+            flag.append("unassigned" in formatted_value)
         elif value == "all":
             flag.append("unavailable" in formatted_value)
         elif value == "names":
@@ -97,7 +97,7 @@ def check_data(im_data):
         error_count += 1
         error_message += "[X] Full name: {} ".format(im_data.full_name)
     # First name validation
-    if has_invalid(im_data.first_name, ["ampersand", "zero", "null", "names", "all"]) or \
+    if has_invalid(im_data.first_name, ["ampersand", "zero", "xx", "null", "names", "all"]) or \
             (not has_invalid(im_data.first_name, ["empty"]) and
              (im_data.first_name not in im_data.full_name or
               not valid_name_field(im_data.first_name) or
@@ -107,7 +107,7 @@ def check_data(im_data):
         error_count += 1
         error_message += "[X] First name: {} ".format(im_data.first_name)
     # Mailing address validation
-    if has_invalid(im_data.mailing_address, ["zero", "pobox", "address", "all"]) or \
+    if has_invalid(im_data.mailing_address, ["zero", "pobox", "xx", "address", "all"]) or \
             not valid_address_field(im_data.mailing_address) or \
             are_all_numbers(im_data.mailing_address) or \
             has_fractions(im_data.mailing_address):
@@ -127,7 +127,7 @@ def check_data(im_data):
         error_count += 1
         error_message += "[X] Mailing city: {} ".format(im_data.mailing_city)
     # Property address validation
-    if has_invalid(im_data.property_address, ["zero", "empty", "address", "all"]) or \
+    if has_invalid(im_data.property_address, ["zero", "empty", "xx", "address", "all"]) or \
             not valid_address_field(im_data.property_address) or \
             has_fractions(im_data.property_address):
         error_count += 1
