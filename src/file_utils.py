@@ -21,6 +21,7 @@ def to_obj(row):
     im_data.mailing_state = clean_spaces_string(row[4])
     im_data.mailing_zip = clean_spaces_string(row[5])
     im_data.property_address = clean_spaces_string(row[6])
+    im_data.owner_type = clean_spaces_string(row[10])
     im_data.row = row
     return im_data
 

@@ -3,8 +3,8 @@ import checkpoints
 import os
 import sys
 
-your_path = "D:/Erik/UPWORK/Tool/"
-#your_path = sys.argv[1]
+#your_path = "D:/Erik/UPWORK/Tool/"
+your_path = sys.argv[1]
 
 if __name__ == '__main__':
     abs_path = "broken-data-checker-tool/unchecked_files/*.csv"

@@ -26,6 +26,10 @@ def has_number(field_value):
     return re.findall(r"([\d]+)", field_value) != []
 
 
+def full_name_has_number(field_value):
+    return re.findall(r"(20[\d]+-)", field_value) != []
+
+
 def starting_with_number(field_value):
     return re.findall(r"(^[\d]+[\d\w\s\.\,\'\-\#]+$)", field_value) != []
 
@@ -72,6 +76,8 @@ def has_invalid(field_value, values):
             flag.append("po box box" in formatted_value)
         elif value == "xx":
             flag.append("xx" in formatted_value)
+        elif value == "property":
+            flag.append("property owner" in formatted_value)
         elif value == "ampersand":
             flag.append("&" in formatted_value and invalid_ampersand_place(formatted_value))
 
@@ -86,18 +92,29 @@ def has_fractions(field_value):
     return re.findall(r"(\d+/\d+)", field_value)
 
 
+def invalid_first_name_by_owner_type(first_name, owner_type):
+    if owner_type == "company" or owner_type == "trust":
+        if len(first_name) == 1:
+            return True
+    return False
+
+
 def check_data(im_data):
     error_count = 0
     error_message = ""
     # Full name validation
     fullname_validation = are_all_numbers(im_data.full_name) or has_date(im_data.full_name) or \
-                          has_invalid(im_data.full_name, ["null", "ampersand", "xx", "zero", "empty", "all"]) or \
-                          not valid_name_field(im_data.full_name)
+                          has_invalid(im_data.full_name,
+                                      ["null", "ampersand", "xx", "zero", "empty", "all", "property"]) or \
+                          not valid_name_field(im_data.full_name) or full_name_has_number(im_data.full_name)
     if fullname_validation:
         error_count += 1
         error_message += "[X] Full name: {} ".format(im_data.full_name)
     # First name validation
-    if has_invalid(im_data.first_name, ["ampersand", "zero", "xx", "null", "names", "all"]) or \
+    if invalid_first_name_by_owner_type(im_data.first_name, im_data.owner_type) or has_invalid(im_data.first_name,
+                                                                                               ["ampersand", "zero",
+                                                                                                "xx", "null", "names",
+                                                                                                "all", "property"]) or \
             (not has_invalid(im_data.first_name, ["empty"]) and
              (im_data.first_name not in im_data.full_name or
               not valid_name_field(im_data.first_name) or
@@ -107,7 +124,7 @@ def check_data(im_data):
         error_count += 1
         error_message += "[X] First name: {} ".format(im_data.first_name)
     # Mailing address validation
-    if has_invalid(im_data.mailing_address, ["zero", "pobox", "xx", "address", "all"]) or \
+    if has_invalid(im_data.mailing_address, ["zero", "pobox", "xx", "address", "all", "property"]) or \
             not valid_address_field(im_data.mailing_address) or \
             are_all_numbers(im_data.mailing_address) or \
             has_fractions(im_data.mailing_address):
@@ -122,12 +139,12 @@ def check_data(im_data):
         error_count += 1
         error_message += "[X] Mailing state: {} ".format(im_data.mailing_state)
     # Mailing city validation
-    if has_invalid(im_data.mailing_city, ["zero", "all"]) or valid_mail_state(im_data.mailing_city) or \
+    if has_invalid(im_data.mailing_city, ["zero", "all", "xx", "property"]) or valid_mail_state(im_data.mailing_city) or \
             not valid_city_field(im_data.mailing_city):
         error_count += 1
         error_message += "[X] Mailing city: {} ".format(im_data.mailing_city)
     # Property address validation
-    if has_invalid(im_data.property_address, ["zero", "empty", "xx", "address", "all"]) or \
+    if has_invalid(im_data.property_address, ["zero", "empty", "xx", "address", "all", "property"]) or \
             not valid_address_field(im_data.property_address) or \
             has_fractions(im_data.property_address):
         error_count += 1
